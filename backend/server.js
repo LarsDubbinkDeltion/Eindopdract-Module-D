@@ -161,7 +161,7 @@ app.post("/me", (req, res) => {
 
 app.post("/newmeet", (req, res) => {
     const meetName = req.body.meetName
-    const hostId = req.body.hostId
+    const hostId = req.session.user.id
 
     const lon = req.body.lon
     const lat = req.body.lat
@@ -175,6 +175,66 @@ app.post("/newmeet", (req, res) => {
             if (err) {
                 console.log(err)
                 
+                res.json({
+                    success: false
+                })
+
+                return
+            }
+
+            res.json({
+                success: true
+            })
+        }
+    )
+})
+
+app.post("/joinevent", (req, res) => {
+    const meeting_id = req.body.meeting_id
+    const user_id = req.session.user.id
+    const user_car_id = req.body.user_car_id
+
+    db.run(
+        "INSERT INTO joined_users (meeting_id, user_id, user_car_id) VALUES (?, ?, ?)",
+        [meeting_id, user_id, user_car_id],
+        (err) => {
+            if (err) {
+                console.log(err)
+
+                res.json({
+                    success: false
+                })
+
+                return
+            }
+
+            res.json({
+                success: true
+            })
+        }
+    )
+})
+
+app.post("/addcar", (req, res) => {
+    const brand = req.body.brand
+    const model = req.body.model
+
+    const user_id = req.session.user.id
+
+    const license_plate = req.body.license_plate
+
+    const horse_power = req.body.horse_power
+    const top_speed = req.body.top_speed
+
+    const kilometers = req.body.kilometers
+
+    db.run(
+        "INSERT INTO user_cars (brand, model, user_id, license_plate, horse_power, top_speed, kilometers) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [brand, model, user_id, license_plate, horse_power, top_speed, kilometers],
+        (err) => {
+            if (err) {
+                console.log(err)
+
                 res.json({
                     success: false
                 })
