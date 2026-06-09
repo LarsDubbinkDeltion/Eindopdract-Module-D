@@ -22,7 +22,8 @@ db.run(`
         admin_id INTEGER NOT NULL,
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
-        datetime INTEGER NOT NULL
+        datetime INTEGER NOT NULL,
+        meet_name VARCHAR(255)
     )
 `)
 
@@ -156,6 +157,36 @@ app.post("/me", (req, res) => {
         user: req.session.user,
         userId: req.session.user.id
     })
+})
+
+app.post("/newmeet", (req, res) => {
+    const meetName = req.body.meetName
+    const hostId = req.body.hostId
+
+    const lon = req.body.lon
+    const lat = req.body.lat
+
+    const datetime = req.body.datetime
+
+    db.run(
+        "INSERT INTO meetings (meet_name, datetime, longitude, latitude, admin_id) VALUES (?, ?, ?, ?, ?)",
+        [meetName, datetime, lon, lat, hostId],
+        (err) => {
+            if (err) {
+                console.log(err)
+                
+                res.json({
+                    success: false
+                })
+
+                return
+            }
+
+            res.json({
+                success: true
+            })
+        }
+    )
 })
 
 app.get("/meets/:amount", (req, res) => {
