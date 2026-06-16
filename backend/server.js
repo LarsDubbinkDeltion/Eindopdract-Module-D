@@ -284,6 +284,26 @@ app.get("/meets/:amount", (req, res) => {
     )
 })
 
+app.get("/joinedcars/:meetid", async (req, res) => {
+    const meetid = req.params.meetid;
+
+    const sql = `
+        SELECT uc.*
+        FROM joined_users ju
+        JOIN user_cars uc
+            ON ju.user_id = uc.user_id
+        WHERE ju.meeting_id = ?
+    `;
+
+    db.query(sql, [meetid], (err, results) => {
+        if (err) {
+            return res.status(500).json(err);
+        }
+
+        res.json(results);
+    });
+});
+
 app.listen(3000, () => {
     console.log("Server running on port 3000");
 });
